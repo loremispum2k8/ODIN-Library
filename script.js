@@ -1,11 +1,21 @@
 let myLibrary = [];
 
-function Book(title,author,pages,wasRead) {
+/*function Book(title,author,pages,wasRead) {
   this.id = crypto.randomUUID();
   this.title = title;
   this.author = author;
   this.pages = pages;
   this.wasRead = wasRead;
+}*/
+
+class Book{
+  constructor(title,author,pages,wasRead){
+    this.id = crypto.randomUUID();
+    this.title = title;
+    this.author = author;
+    this.pages = pages;
+    this.wasRead = wasRead;
+  }
 }
 
 let container = document.querySelector('.card-container');
@@ -35,22 +45,58 @@ let formAuthor = document.querySelector('#author')
 let formPages = document.querySelector('#pages')
 let formStatus = document.querySelector('#status')
 let deleteBtn = document.querySelectorAll('.deleteBtn');
-let changeStatusBtn = document.querySelectorAll('.changeRead')
+let changeStatusBtn = document.querySelectorAll('.changeRead');
+
+
+
+let inputs = document.querySelectorAll('input');
+let select = document.querySelector('select')
+inputs.forEach(input=>input.required = true)
+select.required = true;
+
+
 addBtn.addEventListener('click',()=>{
   popUp.style.display='flex';
-  exitBtn.addEventListener('click',()=>{
-    popUp.style.display='none';
-  })
-  popUpAddBtn.addEventListener('click',(e)=>{
-    e.preventDefault();
-    if(form.checkValidity()){
-      myLibrary.push(new Book(formTitle.value,formAuthor.value,formPages.value,formStatus.value));
-      container.innerHTML = '';
-      addBookToLibrary()
-      console.log(myLibrary)
-      form.reset();
+  popUpAddBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+
+  inputs.forEach(input=>{
+    if (formTitle.validity.valueMissing) {
+    formTitle.setCustomValidity('You have to mention the Title');
+    } else {
+    formTitle.setCustomValidity('');
+    }
+
+    if (formAuthor.validity.valueMissing) {
+    formAuthor.setCustomValidity('You have to mention the Author');
+    } else {
+    formAuthor.setCustomValidity('');
+    }
+
+    if (formPages.validity.valueMissing) {
+    formPages.setCustomValidity('You have to mention the Pages');
+    } else {
+    formPages.setCustomValidity('');
+    }
+    
+    if (select.validity.valueMissing) {
+    select.setCustomValidity('You have to mention the state of reading');
+    } else {
+    select.setCustomValidity('');
     }
   })
+
+
+  if (!form.reportValidity()) {
+    return;
+  }
+
+  myLibrary.push(new Book(formTitle.value, formAuthor.value, formPages.value, formStatus.value));
+  container.innerHTML = '';
+  addBookToLibrary();
+  form.reset();
+  popUp.style.display = 'none';
+});
 })
 
 
@@ -60,7 +106,6 @@ container.addEventListener('click',(e)=>{
     myLibrary = myLibrary.filter((bookId)=>bookId.id !== e.target.parentElement.getAttribute('data-id'));
     container.innerHTML = '';
     addBookToLibrary()
-    console.log(myLibrary)
   }
   
   if(e.target.classList.contains('changeRead')){
